@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Updates</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="hrpage.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <nav class="navbar-cont primary-navbar">
+        <div class="logo">
+            <img src="images/logo.png" alt="logo" />
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="head-cont">
+            <h2 class="title">HR Updates</h2>
+        </div>
+
+        <div class="container">
+            <table class="table">
+                <tbody id="UpdatesContainer">
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    async function loadHrUpdates() {
+        const UpdatesContainer = document.getElementById('UpdatesContainer')
+        if (!UpdatesContainer) {
+            console.error("UpdatesContainer not found")
+            return
+        }
+
+        let updates = await fetch("http://localhost:4000/api/v1/hr-updates")
+        updates = await updates.json()
+
+        if (Array.isArray(updates.data)) {
+            updates.data.forEach(hrUpdate => {
+                const hrUpdateNode = document.createElement("tr")
+
+                // Convert ISO string to a readable format
+                const date = hrUpdate.TimeOfUpdate
+                
+                hrUpdateNode.innerHTML = `
+                    <td>
+                        <div class="update-title">${hrUpdate.Title}</div>
+                        <div class="update-message">${hrUpdate.HRUpdate}</div>
+                        <div class="time-of-update">${date}</div>
+                    </td>
+                `
+
+                hrUpdateNode.classList.add("hrUpdate")
+                UpdatesContainer.appendChild(hrUpdateNode)
+            })
+        }
+    }
+    loadHrUpdates()
+</script>
+
+</html>
