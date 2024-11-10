@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Applications {
+  ApplicationID                  String          @id(map: "PK__Applicat__C93A4F79C826D3D8") @db.VarChar(20)
+  ApplicationName                String?         @db.VarChar(255)
+  CategoryName                   String?         @db.VarChar(255)
+  CategoryID                     String?         @db.VarChar(20)
+  ApplicationURL                 String?         @db.VarChar(255)
+  ApplicationDescription         String?         @db.VarChar(80)
+  ApplicationImage               String?
+  ApplicationOwner               String?         @db.VarChar(255)
+  ApplicationOwnerPrimaryEmail   String?         @db.VarChar(80)
+  ApplicationOwnerSecondaryEmail String?         @db.VarChar(80)
+  CategoryMaster                 CategoryMaster? @relation(fields: [CategoryID], references: [CategoryID], onDelete: NoAction, onUpdate: NoAction, map: "FK__Applicati__Categ__403A8C7D")
+  Favorites                      Favorites[]
+}
+
+model CategoryMaster {
+  CategoryID    String         @id(map: "PK__Category__19093A2B8E7460B3") @db.VarChar(20)
+  CategoryName  String?        @db.VarChar(255)
+  CategoryOrder Int?
+  Applications  Applications[]
+}
+
+model EmployeeAccessRequests {
+  EmployeeID        String    @id(map: "PK__Employee__7AD04FF1D12EECD4") @db.VarChar(20)
+  ApplicationName   String?   @db.VarChar(255)
+  EmailAddress      String?   @db.VarChar(80)
+  Messages          String?   @db.VarChar(80)
+  AccessRequestTime DateTime? @db.DateTime
+  AssignDate        DateTime? @db.Date
+  Status            String?   @db.VarChar(10)
+}
+
+model Favorites {
+  ID                Int                @id(map: "PK__Favorite__3214EC270817B107") @default(autoincrement())
+  EmployeeID        String?            @db.VarChar(20)
+  ApplicationID     String?            @db.VarChar(20)
+  ImportantContacts ImportantContacts? @relation(fields: [ApplicationID], references: [EmployeeID], onDelete: NoAction, onUpdate: NoAction, map: "FK__Favorites__Appli__5165187F")
+  Applications      Applications?      @relation(fields: [EmployeeID], references: [ApplicationID], onDelete: NoAction, onUpdate: NoAction, map: "FK__Favorites__Emplo__5070F446")
+}
+
+model holidays {
+  ID           Int       @id(map: "PK__holidays__3214EC27EFA8A61E") @default(autoincrement())
+  HolidayDate  DateTime? @db.Date
+  HolidayEvent String?   @db.VarChar(30)
+}
+
+model HRUpdates {
+  UpdateID     Int       @id(map: "PK__HRUpdate__7A0CF3259F114986") @default(autoincrement())
+  HRUpdate     String?   @db.VarChar(200)
+  TimeOfUpdate DateTime? @db.DateTime
+  Category     String?   @db.VarChar(30)
+  UpdateStatus String?   @db.VarChar(10)
+  Title        String?   @db.VarChar(50)
+}
+
+model ImportantContacts {
+  EmployeeID   String      @id(map: "PK__Importan__7AD04FF192185899") @db.VarChar(20)
+  EmployeeName String?     @db.VarChar(255)
+  Department   String?     @db.VarChar(30)
+  PhoneNumber  Int?
+  EmailAddress String?     @db.VarChar(80)
+  Favorites    Favorites[]
+}
+
+model Support {
+  TeamID          String  @id(map: "PK__Support__123AE7B9F8132095") @db.VarChar(20)
+  TeamName        String? @db.VarChar(255)
+  TeamPhoneNumber Int?
+  TeamDept        String? @db.VarChar(255)
+  EmailAddress    String? @db.VarChar(80)
+}
